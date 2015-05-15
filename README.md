@@ -3,5 +3,14 @@ ECOTree
 
 Graphic JavaScript Tree with Layout (SVG)
 
-clone from http://www.codeproject.com/Articles/16192/Graphic-JavaScript-Tree-with-Layout/
-+ Fix Chrome display issue
++ Fix IE10+ display issue by using Canvas
++ Added additional fields for text content that can be used for Labels
+
+
+Coming Soon
++ New Example that shows the use of labels and the additional fields
+
+
+
+
+Nicholas Darley
