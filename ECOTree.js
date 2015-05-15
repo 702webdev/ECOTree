@@ -20,14 +20,14 @@
 |     References:
 |                                                                
 |     Walker II, J. Q., "A Node-Positioning Algorithm for General Trees"
-|	     			   Software — Practice and Experience 10, 1980 553-561.    
+|	     			   Software â€” Practice and Experience 10, 1980 553-561.    
 |                      (Obtained from C++ User's journal. Feb. 1991)                                                                              
 |					   
-|     Last updated: October 26th, 2006
-|     Version: 1.0
+|     Last updated: May 15th, 2015
+|     Version: 1.5
 \------------------------------------------------------------------------------------------*/
 
-ECONode = function (id, pid, dsc, w, h, c, bc, target, meta) {
+ECONode = function (id, pid, dsc, w, h, c, bc, target, meta, effort, resource, comp) {
 	this.id = id;
 	this.pid = pid;
 	this.dsc = dsc;
@@ -37,6 +37,9 @@ ECONode = function (id, pid, dsc, w, h, c, bc, target, meta) {
 	this.bc = bc;
 	this.target = target;
 	this.meta = meta;
+	this.effort = effort;
+	this.resource = resource;
+	this.comp = comp;
 	
 	this.siblingIndex = 0;
 	this.dbIndex = 0;
@@ -364,9 +367,18 @@ ECOTree.SL_NONE = 2;
 ECOTree._getAutoRenderMode = function() {
 	var r = "VML";
 	var is_ie6 = /msie 6\.0/i.test(navigator.userAgent);
+	var is_ie7 = /msie 7\.0/i.test(navigator.userAgent);
+	var is_ie8 = /msie 8\.0/i.test(navigator.userAgent);
+	var is_ie9 = /msie 9\.0/i.test(navigator.userAgent);
+	var is_ie10 = /msie 10\.0/i.test(navigator.userAgent);
+	var is_ie11 = /msie 11\.0/i.test(navigator.userAgent);
 	var is_ff = /Firefox/i.test(navigator.userAgent);	
 	var is_ch = /chrome/.test(navigator.userAgent.toLowerCase()); 
-	if (is_ff || is_ch) r = "CANVAS";
+	console.log(is_ie7);
+	console.log(is_ie8);
+	console.log(is_ie9);
+	console.log(is_ie10);
+	if (is_ff || is_ch || is_ie10 || is_ie11 ) r = "CANVAS";
 	return r;
 }
 
@@ -706,7 +718,7 @@ ECOTree.prototype._drawTree = function () {
 					this.ctx.restore();
 					
 					//HTML part...
-					s.push('<div id="' + node.id + '" class="econode" style="top:'+(node.YPosition+this.canvasoffsetTop)+'; left:'+(node.XPosition+this.canvasoffsetLeft)+'; width:'+node.w+'; height:'+node.h+';" ');
+					s.push('<div id="' + node.id + '" class="econode" style="top:'+(node.YPosition+this.canvasoffsetTop)+'px; left:'+(node.XPosition+this.canvasoffsetLeft)+'px; width:'+node.w+'px; height:'+node.h+'px;" ');
 					if (this.config.selectMode != ECOTree.SL_NONE)											
 						s.push('onclick="javascript:ECOTree._canvasNodeClickHandler('+this.obj+',event.target.id,\''+node.id+'\');" ');										
 					s.push('>');
@@ -727,6 +739,11 @@ ECOTree.prototype._drawTree = function () {
 					{						
 						s.push(node.dsc);
 					}
+					s.push('<label id="cost" style="display:none;">'+node.meta+'</label>');
+					s.push('<label id="effort" style="display:none;">'+node.effort+'</label>');
+					s.push('<label id="comp" style="display:none;">'+node.comp+'</label>');
+					s.push('<label id="resource" style="display:none;">'+node.resource+'</label>');
+
 					s.push('</font>');
 					s.push('</div>');		
 					break;
@@ -791,7 +808,7 @@ ECOTree.prototype.toString = function () {
 			break;
 			
 		case "VML":
-			s.push('<v:group coordsize="10000, 10000" coordorigin="0, 0" style="position:absolute;width=10000px;height=10000px;" >');
+			s.push('<v:group coordsize="10000, 10000" coordorigin="0, 0" style="position:absolute;width:10000px;height:10000px;" >');
 			s.push(this._drawTree());
 			s.push('</v:group>');
 			break;
@@ -822,7 +839,7 @@ ECOTree.prototype.UpdateTree = function () {
 	}
 }
 
-ECOTree.prototype.add = function (id, pid, dsc, w, h, c, bc, target, meta) {	
+ECOTree.prototype.add = function (id, pid, dsc, w, h, c, bc, target, meta, effort, resource, comp) {	
 	var nw = w || this.config.defaultNodeWidth; //Width, height, colors, target and metadata defaults...
 	var nh = h || this.config.defaultNodeHeight;
 	var color = c || this.config.nodeColor;
@@ -847,7 +864,7 @@ ECOTree.prototype.add = function (id, pid, dsc, w, h, c, bc, target, meta) {
 			}	
 		}
 	
-	var node = new ECONode(id, pid, dsc, nw, nh, color, border, tg, metadata);	//New node creation...
+	var node = new ECONode(id, pid, dsc, nw, nh, color, border, tg, metadata, effort, resource, comp);	//New node creation...
 	node.nodeParent = pnode;  //Set it's parent
 	pnode.canCollapse = true; //It's obvious that now the parent can collapse	
 	var i = this.nDatabaseNodes.length;	//Save it in database
